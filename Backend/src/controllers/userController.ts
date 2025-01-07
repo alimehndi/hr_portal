@@ -2,6 +2,7 @@ import asyncHandler from "../middleware/asyncHandler";
 import User from "../model/userModel";
 import Iuser from "../interface/Iuser";
 import { Request, Response } from "express";
+import generateToken from "../utils/generateToken";
 
 // @desc authenticate the user
 // @route POST /api/v1/auth
@@ -12,8 +13,8 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
         
         const { username, password } = req.body;
         const user = await User.findOne({ username: username }) as Iuser | null;
-        console.log(`User: `, user)
         if (user && (user.password == password)) {
+            generateToken(res, user.id);
             res.json({
                 id: user.id,
                 username: user.username

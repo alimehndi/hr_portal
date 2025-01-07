@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.authUser = void 0;
 const asyncHandler_1 = __importDefault(require("../middleware/asyncHandler"));
 const userModel_1 = __importDefault(require("../model/userModel"));
+const generateToken_1 = __importDefault(require("../utils/generateToken"));
 // @desc authenticate the user
 // @route POST /api/v1/auth
 // @access PUBLic
@@ -22,8 +23,8 @@ const authUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, voi
     try {
         const { username, password } = req.body;
         const user = yield userModel_1.default.findOne({ username: username });
-        console.log(`User: `, user);
         if (user && (user.password == password)) {
+            (0, generateToken_1.default)(res, user.id);
             res.json({
                 id: user.id,
                 username: user.username
