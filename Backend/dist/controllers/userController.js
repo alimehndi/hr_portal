@@ -12,10 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.authUser = void 0;
+exports.addUser = exports.authUser = void 0;
 const asyncHandler_1 = __importDefault(require("../middleware/asyncHandler"));
 const userModel_1 = __importDefault(require("../model/userModel"));
 const generateToken_1 = __importDefault(require("../utils/generateToken"));
+const generateUniqueId_1 = __importDefault(require("../utils/generateUniqueId"));
+const hashAndVerifyPassword_1 = require("../utils/hashAndVerifyPassword");
 // @desc authenticate the user
 // @route POST /api/v1/auth
 // @access PUBLic
@@ -27,7 +29,8 @@ const authUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, voi
             (0, generateToken_1.default)(res, user.id);
             res.json({
                 id: user.id,
-                username: user.username
+                username: user.username,
+                role: user.role
             });
         }
     }
@@ -37,3 +40,24 @@ const authUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, voi
     }
 }));
 exports.authUser = authUser;
+//@desc add a new employee
+//route POST /api/v1/admin/add
+//access admin
+const addUser = (0, asyncHandler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { username, password, role } = req.body;
+        const id = (0, generateUniqueId_1.default)();
+        const hashedPassword = yield (0, hashAndVerifyPassword_1.hashPassword)(password);
+        // console.log(hashedPassword);
+        const user = yield userModel_1.default.create({ id: id, username: username, password: hashedPassword, role: role });
+        // console.log(user);
+        res.status(200);
+        res.send({ "message": "successfully added user", "id": user.id });
+    }
+    catch (error) {
+        res.status(400);
+        console.log(error);
+        throw new Error('Error inserting the user');
+    }
+}));
+exports.addUser = addUser;

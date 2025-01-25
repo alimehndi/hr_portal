@@ -1,8 +1,10 @@
 import  Express  from "express";
-import { authUser } from "../controllers/userController";
+import { addUser, authUser } from "../controllers/userController";
+import { adminRole, protect } from "../middleware/authMiddleware";
 const router = Express();
 // @desc authenticate the user
  
 
-router.post('/auth',authUser);
+router.route('/auth').post(authUser);
+router.route('/adduser').post(protect,adminRole,addUser);
 export {router as userRoutes};

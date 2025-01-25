@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.employeeRole = exports.adminRole = exports.hrRole = exports.protect = void 0;
 const asyncHandler_1 = __importDefault(require("./asyncHandler"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const userModel_js_1 = __importDefault(require("../model/userModel.js"));
@@ -35,4 +36,34 @@ const protect = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0
         throw new Error('Not Authorized : No Token');
     }
 }));
-exports.default = protect;
+exports.protect = protect;
+const adminRole = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.user && req.user.role === 'Admin') {
+        next();
+    }
+    else {
+        res.status(401);
+        throw new Error('Not authorized as an admin');
+    }
+}));
+exports.adminRole = adminRole;
+const hrRole = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.user && req.user.role === 'HR') {
+        next();
+    }
+    else {
+        res.status(401);
+        throw new Error('Not authorized as an HR');
+    }
+}));
+exports.hrRole = hrRole;
+const employeeRole = (0, asyncHandler_1.default)((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.user && req.user.role === 'EMP') {
+        next();
+    }
+    else {
+        res.status(401);
+        throw new Error('Not authorized as an EMP');
+    }
+}));
+exports.employeeRole = employeeRole;
